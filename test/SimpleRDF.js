@@ -4,9 +4,7 @@
 
 const assert = require('assert')
 const rdf = require('rdf-ext')
-const simple = require('../index')
-const DatasetStore = require('rdf-store-dataset')
-const SimpleArray = require('../lib/array')
+const SimpleRDF = require('..')
 
 let blogContext = {
   about: 'http://schema.org/about',
@@ -50,84 +48,84 @@ let blogDataset = rdf.dataset([
 
 let blogGraph = rdf.graph(blogDataset)
 
-describe('simplerdf', () => {
+describe('SimpleRDF', () => {
   it('constructor should import context', () => {
-    let blog = simple(blogContext)
+    let blog = new SimpleRDF(blogContext)
 
     assert.notEqual(Object.getOwnPropertyDescriptor(blog, 'name'), undefined)
     assert.notEqual(Object.getOwnPropertyDescriptor(blog, 'post'), undefined)
   })
 
   it('constructor should create BlankNode subject if none was given', () => {
-    let blog = simple(blogContext)
+    let blog = new SimpleRDF(blogContext)
 
     assert.equal(blog._core.iri.termType, 'BlankNode')
   })
 
   it('constructor should use existing NamedNode subject if one was given', () => {
     let iri = rdf.namedNode(blogIri)
-    let blog = simple(blogContext, iri)
+    let blog = new SimpleRDF(blogContext, iri)
 
     assert(blog._core.iri.equals(iri))
   })
 
   it('constructor should use existing BlankNode subject if one was given', () => {
     let iri = rdf.blankNode()
-    let blog = simple(blogContext, iri)
+    let blog = new SimpleRDF(blogContext, iri)
 
     assert(blog._core.iri.equals(iri))
   })
 
   it('constructor should create a NamedNode subject if a String was given', () => {
     let iri = rdf.namedNode(blogIri)
-    let blog = simple(blogContext, blogIri)
+    let blog = new SimpleRDF(blogContext, blogIri)
 
     assert(blog._core.iri.equals(iri))
   })
 
   it('constructor should use an existing graph if one was given', () => {
-    let blog = simple(blogContext, blogIri, blogGraph)
+    let blog = new SimpleRDF(blogContext, blogIri, blogGraph)
 
     assert(blogGraph.equals(blog._core.graph))
   })
 
   it('constructor should create properties for imported graph predicates', () => {
-    let blog = simple(null, blogIri, blogGraph)
+    let blog = new SimpleRDF(null, blogIri, blogGraph)
 
     assert.equal(blog['http://schema.org/name'], 'simple blog')
   })
 
   it('.child should create a child object with a BlankNode subject if none was given', () => {
-    let blog = simple(blogContext)
+    let blog = new SimpleRDF(blogContext)
     let post = blog.child()
 
-    assert(post instanceof simple.SimpleRDF)
+    assert(post instanceof SimpleRDF)
     assert.equal(post._core.iri.termType, 'BlankNode')
   })
 
   it('.child should create a child object with a NamedNode subject if a String was given', () => {
-    let blog = simple(blogContext)
+    let blog = new SimpleRDF(blogContext)
     let post = blog.child('http://example.org/post-1')
 
     assert(post._core.iri.equals(rdf.namedNode('http://example.org/post-1')))
   })
 
   it('getter should support String values', () => {
-    let blog = simple(blogContext, blogIri, blogGraph)
+    let blog = new SimpleRDF(blogContext, blogIri, blogGraph)
     let name = blog.name
 
     assert.equal(name, 'simple blog')
   })
 
   it('getter should support Array values', () => {
-    let blog = simple(blogContext, blogIri, blogGraph)
+    let blog = new SimpleRDF(blogContext, blogIri, blogGraph)
     let posts = blog.post
 
-    assert(simple.isArray(posts))
+    assert(SimpleRDF.isArray(posts))
   })
 
   it('setter should support IRI values', () => {
-    let blog = simple(blogContext)
+    let blog = new SimpleRDF(blogContext)
     let value = 'http://example.org/provider'
 
     blog.provider = value
@@ -142,7 +140,7 @@ describe('simplerdf', () => {
   })
 
   it('setter should support String values', () => {
-    let blog = simple(blogContext)
+    let blog = new SimpleRDF(blogContext)
 
     blog.name = 'simple blog'
 
@@ -156,7 +154,7 @@ describe('simplerdf', () => {
   })
 
   it('setter should support Object values', () => {
-    let blog = simple(blogContext)
+    let blog = new SimpleRDF(blogContext)
     let project = blog.child()
 
     blog.about = project
@@ -165,7 +163,7 @@ describe('simplerdf', () => {
   })
 
   it('setter should support Node values', () => {
-    let blog = simple(blogContext)
+    let blog = new SimpleRDF(blogContext)
     let project = rdf.namedNode('http://example.org/project')
 
     blog.about = project
@@ -174,7 +172,7 @@ describe('simplerdf', () => {
   })
 
   it('setter should support boolean values', () => {
-    let blog = simple(blogContext)
+    let blog = new SimpleRDF(blogContext)
 
     blog.isFamilyFriendly = true
 
@@ -188,7 +186,7 @@ describe('simplerdf', () => {
   })
 
   it('setter should support number values', () => {
-    let post = simple(blogContext)
+    let post = new SimpleRDF(blogContext)
 
     post.version = 0.1
 
@@ -202,7 +200,7 @@ describe('simplerdf', () => {
   })
 
   it('setter should support Array values', () => {
-    let blog = simple(blogContext)
+    let blog = new SimpleRDF(blogContext)
     let post = blog.child()
 
     blog.post = [post]
@@ -213,7 +211,7 @@ describe('simplerdf', () => {
   })
 
   it('setter should support Array access', () => {
-    let blog = simple(blogContext)
+    let blog = new SimpleRDF(blogContext)
     let post = blog.child()
 
     blog.post.push(post)
@@ -222,7 +220,7 @@ describe('simplerdf', () => {
   })
 
   it('getter should support Array access', () => {
-    let blog = simple(blogContext)
+    let blog = new SimpleRDF(blogContext)
     let post = blog.child()
 
     blog.post.push(post)
@@ -234,7 +232,7 @@ describe('simplerdf', () => {
 
   it('getter should support IRI strings', () => {
     let blogGraph = rdf.dataset()
-    let blog = simple(blogContext, null, blogGraph)
+    let blog = new SimpleRDF(blogContext, null, blogGraph)
 
     blogGraph.add(rdf.quad(
       blog.iri(),
@@ -247,7 +245,7 @@ describe('simplerdf', () => {
 
   it('getter should support boolean values', () => {
     let blogGraph = rdf.dataset()
-    let blog = simple(blogContext, null, blogGraph)
+    let blog = new SimpleRDF(blogContext, null, blogGraph)
 
     blogGraph.add(rdf.quad(
       blog.iri(),
@@ -261,7 +259,7 @@ describe('simplerdf', () => {
 
   it('getter should support number values', () => {
     let blogGraph = rdf.dataset()
-    let blog = simple(blogContext, null, blogGraph)
+    let blog = new SimpleRDF(blogContext, null, blogGraph)
 
     blogGraph.add(rdf.quad(
       blog.iri(),
@@ -274,7 +272,7 @@ describe('simplerdf', () => {
   })
 
   it('.iri should do subject update inc. subject and object updates in graph', () => {
-    let blog = simple(blogContext, blogIri)
+    let blog = new SimpleRDF(blogContext, blogIri)
     let post = blog.child()
     let postIri = 'http://example.org/post-1'
 
@@ -287,7 +285,7 @@ describe('simplerdf', () => {
   })
 
   it('.toString should return the graph as N-Triples', () => {
-    let blog = simple(blogContext, blogIri)
+    let blog = new SimpleRDF(blogContext, blogIri)
     let postIri = 'http://example.org/post-1'
     let post = blog.child(postIri)
 
@@ -297,7 +295,7 @@ describe('simplerdf', () => {
   })
 
   it('should keep assigned objects', () => {
-    let blog = simple(blogContext, blogIri)
+    let blog = new SimpleRDF(blogContext, blogIri)
     let provider = blog.child()
 
     provider.name = 'test'
@@ -312,172 +310,18 @@ describe('simplerdf', () => {
   })
 
   it('should use a SimpleRDF object to handle NamedNodes', () => {
-    let blog = simple(blogContext, blogIri)
+    let blog = new SimpleRDF(blogContext, blogIri)
 
     blog.sameAs = rdf.namedNode(blogIri + '/theSame')
 
-    assert(blog.sameAs instanceof simple.SimpleRDF)
+    assert(blog.sameAs instanceof SimpleRDF)
   })
 
   it('should use a SimpleRDF object to handle BlankNodes', () => {
-    let blog = simple(blogContext, blogIri)
+    let blog = new SimpleRDF(blogContext, blogIri)
 
     blog.sameAs = rdf.blankNode()
 
-    assert(blog.sameAs instanceof simple.SimpleRDF)
-  })
-
-  it('.get should fetch an object from the store with Promise API', (done) => {
-    let blogStore = new DatasetStore({
-      dataset: blogDataset.clone()
-    })
-
-    simple(blogContext, blogIri, null, blogStore).get().then((blog) => {
-      assert.equal(blog.name, 'simple blog')
-      assert.equal(blog.post.at(0).headline, 'first blog post')
-
-      done()
-    }).catch((error) => {
-      done(error)
-    })
-  })
-
-  it('.get should be able to pass options to request handler', (done) => {
-    let blogStore = new DatasetStore({
-      dataset: blogDataset.clone()
-    })
-
-    simple(blogContext, blogIri, null, blogStore).get({withCredentials: false}).then((blog) => {
-      assert.equal(blog.name, 'simple blog')
-      assert.equal(blog.post.at(0).headline, 'first blog post')
-
-      done()
-    }).catch((error) => {
-      done(error)
-    })
-  })
-
-  it('.get should fetch an object from the store using the given IRI with Promise API', (done) => {
-    let blogStore = new DatasetStore({
-      dataset: blogDataset.clone()
-    })
-
-    simple(blogContext, null, null, blogStore).get(blogIri).then((blog) => {
-      assert.equal(blog.name, 'simple blog')
-      assert.equal(blog.post.at(0).headline, 'first blog post')
-
-      done()
-    }).catch((error) => {
-      done(error)
-    })
-  })
-
-  it('.save should store an object using the store with Promise API', (done) => {
-    let blogStore = new DatasetStore()
-    let blog = simple(blogContext, blogIri, blogGraph.clone(), blogStore)
-
-    blog.save().then(() => {
-      const blogDataset = rdf.dataset(blogGraph, rdf.namedNode(blogIri))
-
-      assert(blogStore.dataset.equals(blogDataset))
-
-      done()
-    }).catch((error) => {
-      done(error)
-    })
-  })
-})
-
-describe('simplearray', () => {
-  it('constructor should init all member variables', () => {
-    let addValue = () => {}
-    let getValue = () => {}
-    let removeValue = () => {}
-
-    let array = new SimpleArray(addValue, getValue, removeValue)
-
-    assert.equal(array._addValue, addValue)
-    assert.equal(array._getValue, getValue)
-    assert.equal(array._removeValue, removeValue)
-    assert(Array.isArray(array._array))
-  })
-
-  it('.at should handle read access for the array', () => {
-    let addValue = () => {}
-    let getValue = () => {}
-    let removeValue = () => {}
-
-    let array = new SimpleArray(addValue, getValue, removeValue)
-
-    array._array = [0, 1, 2]
-
-    assert.equal(array.at(0), 0)
-    assert.equal(array.at(1), 1)
-    assert.equal(array.at(2), 2)
-  })
-
-  it('.at should handle write access for the array', () => {
-    let addSequence = [0, 1, 2, 3]
-    let removeSequence = [1]
-
-    let addValue = (value) => {
-      assert.equal(value, addSequence.shift())
-    }
-    let getValue = () => {}
-    let removeValue = (value) => {
-      assert.equal(value, removeSequence.shift())
-    }
-
-    let array = new SimpleArray(addValue, getValue, removeValue)
-
-    array.at(0, 0)
-    array.at(1, 1)
-    array.at(2, 2)
-    array.at(1, 3)
-
-    assert.equal(array._array[0], 0)
-    assert.equal(array._array[1], 3)
-    assert.equal(array._array[2], 2)
-
-    assert.deepEqual(addSequence, [])
-    assert.deepEqual(removeSequence, [])
-  })
-
-  it('.forEach should be supported', () => {
-    let valueSequence = [0, 1, 2]
-
-    let addValue = () => {}
-    let getValue = () => {}
-    let removeValue = () => {}
-
-    let array = new SimpleArray(addValue, getValue, removeValue)
-
-    array._array = [0, 1, 2]
-
-    array.forEach(function (item) {
-      assert.equal(item, valueSequence.shift())
-      assert.equal(this, 'context')
-    }, 'context')
-
-    assert.deepEqual(valueSequence, [])
-  })
-
-  it('.push should be supported', () => {
-    let addSequence = [0, 1, 2]
-
-    let addValue = (value) => {
-      assert.equal(value, addSequence.shift())
-    }
-    let getValue = () => {}
-    let removeValue = () => {}
-
-    let array = new SimpleArray(addValue, getValue, removeValue)
-
-    array.push(0)
-    array.push(1)
-    array.push(2)
-
-    assert.deepEqual(array._array, [0, 1, 2])
-    assert.deepEqual(addSequence, [])
+    assert(blog.sameAs instanceof SimpleRDF)
   })
 })

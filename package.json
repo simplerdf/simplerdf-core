@@ -1,36 +1,26 @@
 {
-  "name": "simplerdf",
-  "version": "0.2.14",
+  "name": "simplerdf-core",
+  "version": "0.3.0",
   "description": "RDF as easy as js objects",
   "main": "index.js",
   "scripts": {
-    "test": "npm run build && mocha",
-    "build": "mkdir -p dist && babel --ignore node_modules,dist,examples ./ -d dist",
-    "build-browser": "mkdir -p dist && browserify -e ./ -t babelify --standalone SimpleRDF > dist/simplerdf.browser.js",
-    "minify": "mkdir -p dist && browserify -e ./ -t babelify --standalone SimpleRDF | uglifyjs -c > dist/simplerdf.browser.min.js",
-    "prepublish": "npm run build"
+    "test": "standard && mocha"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nicola/simplerdf.git"
+    "url": "https://github.com/simplerdf/simplerdf-core.git"
   },
   "author": "Nicola Greco <me@nicola.io> (http://nicolagreco.com/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nicola/simplerdf/issues"
+    "url": "https://github.com/simplerdf/simplerdf-core/issues"
   },
-  "homepage": "https://github.com/nicola/simplerdf",
+  "homepage": "https://github.com/simplerdf/simplerdf-core",
   "devDependencies": {
-    "babel-cli": "^6.9.0",
-    "babel-preset-es2015": "^6.9.0",
-    "babelify": "^7.3.0",
-    "browserify": "^12.0.1",
-    "mocha": "^2.4.5",
-    "rdf-store-dataset": "git://github.com/rdf-ext/rdf-store-dataset#develop",
-    "uglifyjs": "^2.4.10"
+    "mocha": "^3.2.0",
+    "standard": "^10.0.2"
   },
   "dependencies": {
-    "rdf-ext": "git://github.com/rdf-ext/rdf-ext#develop",
-    "rdf-store-web": "git://github.com/rdf-ext/rdf-store-web#develop"
+    "rdf-ext": "git://github.com/rdf-ext/rdf-ext#develop"
   }
 }
