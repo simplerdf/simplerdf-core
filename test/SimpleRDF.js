@@ -324,4 +324,75 @@ describe('SimpleRDF', () => {
 
     assert(blog.sameAs instanceof SimpleRDF)
   })
+
+  it('SimpleRDF prototype should have a _plugins property with an Array value', () => {
+    assert.equal(Array.isArray(SimpleRDF.prototype._plugins), true)
+  })
+
+  describe('.extend', () => {
+    it('should assign the prototype properties from the base class', () => {
+      class ClassA {}
+      const ClassB = SimpleRDF.extend(ClassA)
+
+      assert.equal(typeof ClassB.prototype.context, 'function')
+      assert.equal(typeof ClassB.prototype.iri, 'function')
+      assert.equal(typeof ClassB.prototype.graph, 'function')
+    })
+
+    it('should assign the static properties from the base class', () => {
+      class ClassA {}
+      const ClassB = SimpleRDF.extend(ClassA)
+
+      assert.equal(typeof ClassB.extend, 'function')
+    })
+
+    it('should assign the prototype properties from the plugin class', () => {
+      class ClassA {
+        test () {}
+      }
+
+      const ClassB = SimpleRDF.extend(ClassA)
+
+      assert.equal(typeof ClassB.prototype.test, 'function')
+    })
+
+    it('should assign the static properties from the plugin class', () => {
+      class ClassA {
+        static test () {}
+      }
+
+      const ClassB = SimpleRDF.extend(ClassA)
+
+      assert.equal(typeof ClassB.test, 'function')
+    })
+
+    it('should add the plugin to the _plugins array', () => {
+      class ClassA {}
+      const ClassB = SimpleRDF.extend(ClassA)
+
+      assert.equal(ClassB.prototype._plugins[1], ClassA)
+    })
+
+    it('should call the init method of the plugin class with all arguments', () => {
+      let args
+
+      class ClassA {
+        init () {
+          args = arguments
+        }
+      }
+
+      const ClassB = SimpleRDF.extend(ClassA)
+
+      const b = new ClassB({a: 'http://example.org/a'}, 'http://example.org', null, {b: 2})
+
+      assert(b)
+      assert.deepEqual(Array.prototype.slice.call(args, 0), [
+        {a: 'http://example.org/a'},
+        'http://example.org',
+        null,
+        {b: 2}
+      ])
+    })
+  })
 })
