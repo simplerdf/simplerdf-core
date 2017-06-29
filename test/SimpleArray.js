@@ -60,6 +60,27 @@ describe('SimpleArray', () => {
     assert.deepEqual(removeSequence, [])
   })
 
+  it('.filter should be supported', () => {
+    const valueSequence = [0, 1, 2]
+
+    const addValue = () => {}
+    const getValue = () => {}
+    const removeValue = () => {}
+
+    const array = new SimpleArray(addValue, getValue, removeValue)
+
+    array._array = [0, 1, 2]
+
+    const result = array.filter(function (item) {
+      assert.equal(item, valueSequence.shift())
+      assert.equal(this, 'context')
+
+      return item & 1
+    }, 'context')
+
+    assert.deepEqual(result, [1])
+  })
+
   it('.forEach should be supported', () => {
     let valueSequence = [0, 1, 2]
 
