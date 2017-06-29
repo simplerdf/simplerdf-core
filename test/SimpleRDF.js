@@ -284,6 +284,20 @@ describe('SimpleRDF', () => {
     assert(blog._core.graph.match(null, rdf.namedNode('http://schema.org/headline')).toArray().shift().subject.equals(rdf.namedNode(postIri)))
   })
 
+  it('@id should return the IRI', () => {
+    const blog = new SimpleRDF(blogContext, blogIri)
+
+    assert.equal(blog['@id'], blogIri)
+  })
+
+  it('@id should set the IRI', () => {
+    const blog = new SimpleRDF(blogContext)
+
+    blog['@id'] = blogIri
+
+    assert.equal(blog._core.iri, blogIri)
+  })
+
   it('.toString should return the graph as N-Triples', () => {
     let blog = new SimpleRDF(blogContext, blogIri)
     let postIri = 'http://example.org/post-1'
