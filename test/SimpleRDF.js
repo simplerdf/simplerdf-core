@@ -323,6 +323,18 @@ describe('SimpleRDF', () => {
     assert.equal(blog.provider.getName(), 'test')
   })
 
+  it('should keep assigned arrays', () => {
+    const blog = new SimpleRDF(blogContext, blogIri)
+
+    const postBefore = blog.post
+
+    blog.post.push(blog.child())
+
+    const postAfter = blog.post
+
+    assert.equal(postAfter, postBefore)
+  })
+
   it('should use a SimpleRDF object to handle NamedNodes', () => {
     let blog = new SimpleRDF(blogContext, blogIri)
 
