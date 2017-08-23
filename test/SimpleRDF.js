@@ -21,7 +21,11 @@ let blogContext = {
   headline: 'http://schema.org/headline',
   content: 'http://schema.org/content',
   version: 'http://schema.org/version',
-  sameAs: 'http://schema.org/sameAs'
+  sameAs: 'http://schema.org/sameAs',
+  author: {
+    '@id': 'http://schema.org/author',
+    '@container': '@set'
+  },
 }
 
 let blogIri = 'http://example.org/blog'
@@ -208,6 +212,19 @@ describe('SimpleRDF', () => {
     let node = blog._core.graph.match(null, rdf.namedNode('http://schema.org/post')).toArray().shift().object
 
     assert(node.equals(post._core.iri))
+  })
+
+  it('setter should support SimpleArray values', () => {
+    const blog = new SimpleRDF(blogContext)
+
+    blog.post.push(blog.child())
+    blog.post.push(blog.child())
+
+    const authors = blog.post
+
+    blog.author = authors
+
+    assert.equal(blog._core.graph.match(blog.iri(), rdf.namedNode('http://schema.org/author')).length, 2)
   })
 
   it('setter should support Array access', () => {
