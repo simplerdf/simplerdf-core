@@ -25,7 +25,7 @@ let blogContext = {
   author: {
     '@id': 'http://schema.org/author',
     '@container': '@set'
-  },
+  }
 }
 
 let blogIri = 'http://example.org/blog'
