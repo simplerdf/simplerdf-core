@@ -81,7 +81,7 @@ class SimpleRDF {
   }
 
   static isArray (obj) {
-    return obj instanceof SimpleArray
+    return SimpleArray.isArray(obj)
   }
 
   static extend (plugin) {

@@ -19,6 +19,21 @@ describe('SimpleArray', () => {
     assert(Array.isArray(array._array))
   })
 
+  it('.length should return the number of elements in the array', () => {
+    const addValue = () => {}
+    const getValue = () => {}
+    const removeValue = () => {}
+
+    const array0 = new SimpleArray(addValue, getValue, removeValue)
+
+    const array3 = new SimpleArray(addValue, getValue, removeValue)
+
+    array3._array = [0, 1, 2]
+
+    assert.equal(array0.length, 0)
+    assert.equal(array3.length, 3)
+  })
+
   it('.at should handle read access for the array', () => {
     let addValue = () => {}
     let getValue = () => {}
