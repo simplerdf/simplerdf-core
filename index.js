@@ -13,7 +13,7 @@ class SimpleRDF {
 
   context (context) {
     if (context) {
-      this._core.context = context instanceof SimpleContext ? context : new SimpleContext(context)
+      this._core.context = SimpleContext.create(context)
 
       this._core.context.descriptions().forEach((description) => {
         // access values with full IRI
