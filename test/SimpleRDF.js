@@ -241,6 +241,20 @@ describe('SimpleRDF', () => {
       assert.equal(node.value, value)
     })
 
+    it('should expand IRI values', () => {
+      const blog = new SimpleRDF(blogContext)
+
+      blog.provider = 'about'
+
+      const node = blog._core.graph.match(null, rdf.namedNode('http://schema.org/provider'))
+        .toArray()
+        .shift()
+        .object
+
+      assert.equal(node.termType, 'NamedNode')
+      assert.equal(node.value, 'http://schema.org/about')
+    })
+
     it('should support boolean values', () => {
       const blog = new SimpleRDF(blogContext)
 

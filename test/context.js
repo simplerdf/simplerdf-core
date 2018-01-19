@@ -8,6 +8,37 @@ describe('Context', () => {
     assert.equal(typeof Context, 'function')
   })
 
+  describe('.expand', () => {
+    it('should be a method', () => {
+      const context = new Context({})
+
+      assert.equal(typeof context.expand, 'function')
+    })
+
+    it('should not touch values which contain a colon', () => {
+      const context = new Context({})
+      const value = '_:b0'
+
+      assert.equal(context.expand(value), value)
+    })
+
+    it('should expand a value which is defined in the context', () => {
+      const context = new Context({
+        property: 'http://example.org/p'
+      })
+
+      assert.equal(context.expand('property'), 'http://example.org/p')
+    })
+
+    it('should not touch values not define in the context', () => {
+      const context = new Context({
+        property0: 'http://example.org/p'
+      })
+
+      assert.equal(context.expand('property1'), 'property1')
+    })
+  })
+
   describe('.create', () => {
     it('should be a static method', () => {
       assert.equal(typeof Context.create, 'function')
