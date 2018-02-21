@@ -4,6 +4,8 @@ const assert = require('assert')
 const rdf = require('rdf-ext')
 const SimpleRDF = require('..')
 
+const typeTerm = rdf.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type')
+
 const blogContext = {
   about: 'http://schema.org/about',
   name: 'http://schema.org/name',
@@ -466,6 +468,62 @@ describe('SimpleRDF', () => {
 
       assert.equal(blog._core.iri.termType, 'BlankNode')
       assert.equal(blog._core.iri.value, 'b0')
+    })
+  })
+
+  describe('@type', () => {
+    const exampleTypeIri = 'http://example.org/Type'
+
+    it('should return null if type is not set', () => {
+      const simple = new SimpleRDF({})
+
+      assert.equal(simple['@type'], null)
+    })
+
+    it('should return a string', () => {
+      const simple = new SimpleRDF({})
+
+      simple.graph().add(rdf.quad(
+        simple.iri(),
+        typeTerm,
+        rdf.namedNode(exampleTypeIri)
+      ))
+
+      assert.equal(typeof simple['@type'], 'string')
+    })
+
+    it('should return the type IRI', () => {
+      const simple = new SimpleRDF({})
+
+      simple.graph().add(rdf.quad(
+        simple.iri(),
+        typeTerm,
+        rdf.namedNode(exampleTypeIri)
+      ))
+
+      assert.equal(simple['@type'], exampleTypeIri)
+    })
+
+    it('should set the type IRI given as a string', () => {
+      const simple = new SimpleRDF({})
+
+      simple['@type'] = exampleTypeIri
+
+      const typeQuad = simple.graph().match(null, typeTerm).toArray().shift()
+
+      assert.equal(typeQuad.object.termType, 'NamedNode')
+      assert.equal(typeQuad.object.value, exampleTypeIri)
+    })
+
+    it('should set the type IRI given as a Named Node', () => {
+      const simple = new SimpleRDF(blogContext)
+
+      simple['@type'] = rdf.namedNode(exampleTypeIri)
+
+      const typeQuad = simple.graph().match(null, typeTerm).toArray().shift()
+
+      assert.equal(typeQuad.object.termType, 'NamedNode')
+      assert.equal(typeQuad.object.value, exampleTypeIri)
     })
   })
 
