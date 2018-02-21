@@ -29,7 +29,7 @@ class SimpleRDF {
 
   iri (iri) {
     if (iri) {
-      iri = SimpleCore.buildIri(iri)
+      iri = SimpleCore.buildNode(iri)
 
       if (!iri.equals(this._core.iri)) {
         this._core.updateSubject(iri)
@@ -66,7 +66,7 @@ class SimpleRDF {
     this._core = new SimpleCore(this)
     this._handler = new SimpleHandler(this, this._core)
 
-    this._core.iri = SimpleCore.buildIri(iri)
+    this._core.iri = SimpleCore.buildNode(iri)
 
     this.context(context)
     this.graph(graph || rdf.dataset())

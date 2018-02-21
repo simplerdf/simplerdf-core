@@ -345,7 +345,61 @@ describe('SimpleRDF', () => {
   })
 
   describe('.iri', () => {
-    it('.iri should do subject update inc. subject and object updates in graph', () => {
+    it('should return the subject IRI', () => {
+      const blog = new SimpleRDF(blogContext, blogIri)
+
+      const iri = blog.iri()
+
+      assert.equal(iri.termType, 'NamedNode')
+      assert.equal(iri.value, blogIri)
+    })
+
+    it('should return the subject Blank Node', () => {
+      const blog = new SimpleRDF(blogContext)
+
+      const blank = blog.iri()
+
+      assert.equal(blank.termType, 'BlankNode')
+      assert.equal(blank.value, blog._core.iri.value)
+    })
+
+    it('should set the subject IRI given as a string', () => {
+      const blog = new SimpleRDF(blogContext)
+
+      blog.iri(blogIri)
+
+      assert.equal(blog._core.iri.termType, 'NamedNode')
+      assert.equal(blog._core.iri.value, blogIri)
+    })
+
+    it('should set the subject IRI given as a Named Node', () => {
+      const blog = new SimpleRDF(blogContext)
+
+      blog.iri(rdf.namedNode(blogIri))
+
+      assert.equal(blog._core.iri.termType, 'NamedNode')
+      assert.equal(blog._core.iri.value, blogIri)
+    })
+
+    it('should set the subject Blank Node given as a string', () => {
+      const blog = new SimpleRDF(blogContext)
+
+      blog.iri('_:b0')
+
+      assert.equal(blog._core.iri.termType, 'BlankNode')
+      assert.equal(blog._core.iri.value, 'b0')
+    })
+
+    it('should set the subject Blank Node given as a Blank Node', () => {
+      const blog = new SimpleRDF(blogContext)
+
+      blog.iri(rdf.blankNode('b0'))
+
+      assert.equal(blog._core.iri.termType, 'BlankNode')
+      assert.equal(blog._core.iri.value, 'b0')
+    })
+
+    it('should do subject update inc. subject and object updates in graph', () => {
       const blog = new SimpleRDF(blogContext, blogIri)
       const post = blog.child()
       const postIri = 'http://example.org/post-1'
@@ -360,18 +414,58 @@ describe('SimpleRDF', () => {
   })
 
   describe('@id', () => {
-    it('@id should return the IRI', () => {
+    it('should return a string', () => {
+      const simple = new SimpleRDF(blogContext)
+
+      assert.equal(typeof simple['@id'], 'string')
+    })
+
+    it('should return the subject IRI', () => {
       const blog = new SimpleRDF(blogContext, blogIri)
 
       assert.equal(blog['@id'], blogIri)
     })
 
-    it('@id should set the IRI', () => {
+    it('should return the subject Blank Node with _: prefixed', () => {
+      const blog = new SimpleRDF(blogContext)
+
+      assert.equal(blog['@id'], '_:' + blog._core.iri.value)
+    })
+
+    it('should set the subject IRI given as a string', () => {
       const blog = new SimpleRDF(blogContext)
 
       blog['@id'] = blogIri
 
-      assert.equal(blog._core.iri, blogIri)
+      assert.equal(blog._core.iri.termType, 'NamedNode')
+      assert.equal(blog._core.iri.value, blogIri)
+    })
+
+    it('should set the subject IRI given as a Named Node', () => {
+      const blog = new SimpleRDF(blogContext)
+
+      blog['@id'] = rdf.namedNode(blogIri)
+
+      assert.equal(blog._core.iri.termType, 'NamedNode')
+      assert.equal(blog._core.iri.value, blogIri)
+    })
+
+    it('should set the subject Blank Node given as a string', () => {
+      const blog = new SimpleRDF(blogContext)
+
+      blog['@id'] = '_:b0'
+
+      assert.equal(blog._core.iri.termType, 'BlankNode')
+      assert.equal(blog._core.iri.value, 'b0')
+    })
+
+    it('should set the subject Blank Node given as a Blank Node', () => {
+      const blog = new SimpleRDF(blogContext)
+
+      blog['@id'] = rdf.blankNode('b0')
+
+      assert.equal(blog._core.iri.termType, 'BlankNode')
+      assert.equal(blog._core.iri.value, 'b0')
     })
   })
 
