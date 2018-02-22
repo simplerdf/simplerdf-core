@@ -1,6 +1,7 @@
 /* global describe, it */
 
 const assert = require('assert')
+const rdf = require('rdf-ext')
 const Context = require('../lib/context')
 
 describe('Context', () => {
@@ -43,18 +44,19 @@ describe('Context', () => {
       assert.equal(description.property, 'property')
     })
 
-    it('should return a description with a predicate string from a string definition', () => {
+    it('should return a description with a predicate Named Node from a string definition', () => {
       const context = new Context({
         property: examplePropertyIri
       })
 
       const description = context.description('property')
 
-      assert.equal(typeof description.predicate, 'string')
-      assert.equal(description.predicate, examplePropertyIri)
+      assert(description.predicate)
+      assert.equal(description.predicate.termType, 'NamedNode')
+      assert.equal(description.predicate.value, examplePropertyIri)
     })
 
-    it('should return a description with a predicate string from a object definition', () => {
+    it('should return a description with a predicate Named Node from a object definition', () => {
       const context = new Context({
         property: {
           '@id': examplePropertyIri
@@ -63,8 +65,9 @@ describe('Context', () => {
 
       const description = context.description('property')
 
-      assert.equal(typeof description.predicate, 'string')
-      assert.equal(description.predicate, examplePropertyIri)
+      assert(description.predicate)
+      assert.equal(description.predicate.termType, 'NamedNode')
+      assert.equal(description.predicate.value, examplePropertyIri)
     })
 
     it('should return a description with a options object', () => {
@@ -135,14 +138,14 @@ describe('Context', () => {
 
       const expected = [{
         property: 'propertyA',
-        predicate: 'http://example.org/propertyA',
+        predicate: rdf.namedNode('http://example.org/propertyA'),
         options: {
           array: false,
           namedNode: false
         }
       }, {
         property: 'propertyB',
-        predicate: 'http://example.org/propertyB',
+        predicate: rdf.namedNode('http://example.org/propertyB'),
         options: {
           array: true,
           namedNode: false
@@ -234,7 +237,7 @@ describe('Context', () => {
       const context = Context.create(json)
 
       assert.equal(typeof context, 'object')
-      assert.equal(context._json, json)
+      assert.equal(typeof context.descriptions, 'function')
     })
 
     it('should return the input if it\'s already a context object', () => {
@@ -246,8 +249,7 @@ describe('Context', () => {
 
       const context = Context.create(input)
 
-      assert.equal(typeof context, 'object')
-      assert.equal(context._json, json)
+      assert.equal(context, input)
     })
   })
 })
