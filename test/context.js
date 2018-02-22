@@ -105,6 +105,18 @@ describe('Context', () => {
 
       assert(description.options.namedNode)
     })
+
+    it('should return a description with options.reverse true for @reverse property definitions', () => {
+      const context = new Context({
+        property: {
+          '@reverse': examplePropertyIri
+        }
+      })
+
+      const description = context.description('property')
+
+      assert(description.options.reverse)
+    })
   })
 
   describe('descriptions', () => {
@@ -141,14 +153,16 @@ describe('Context', () => {
         predicate: rdf.namedNode('http://example.org/propertyA'),
         options: {
           array: false,
-          namedNode: false
+          namedNode: false,
+          reverse: false
         }
       }, {
         property: 'propertyB',
         predicate: rdf.namedNode('http://example.org/propertyB'),
         options: {
           array: true,
-          namedNode: false
+          namedNode: false,
+          reverse: false
         }
       }]
 

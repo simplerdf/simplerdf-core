@@ -153,7 +153,7 @@ describe('SimpleRDF', () => {
       assert.equal(blog.isFamilyFriendly, true)
     })
 
-    it('should support numb er values', () => {
+    it('should support number values', () => {
       const blogGraph = rdf.dataset()
       const blog = new SimpleRDF(blogContext, null, blogGraph)
 
@@ -210,6 +210,53 @@ describe('SimpleRDF', () => {
       const postAfter = blog.post
 
       assert.equal(postAfter, postBefore)
+    })
+
+    it('should support reverse properties', () => {
+      const parentTerm = rdf.namedNode('http://example.org/parent')
+      const father = rdf.namedNode('http://example.org/father')
+      const son = rdf.namedNode('http://example.org/son')
+
+      const context = {
+        children: {
+          '@reverse': parentTerm.value
+        }
+      }
+
+      const simple = new SimpleRDF(context, father)
+
+      simple.graph().add(rdf.quad(son, parentTerm, father))
+
+      assert.equal(simple.children.iri().toCanonical(), son.toCanonical())
+    })
+
+    it('should support reverse property arrays', () => {
+      const parentTerm = rdf.namedNode('http://example.org/parent')
+      const father = rdf.namedNode('http://example.org/father')
+      const daughter = rdf.namedNode('http://example.org/daughter')
+      const son = rdf.namedNode('http://example.org/son')
+
+      const context = {
+        children: {
+          '@reverse': parentTerm.value,
+          '@container': '@set'
+        }
+      }
+
+      const simple = new SimpleRDF(context, father)
+
+      simple.graph().addAll([
+        rdf.quad(daughter, parentTerm, father),
+        rdf.quad(son, parentTerm, father)
+      ])
+
+      const childrenIris = simple.children.map(child => child['@id']).sort((a, b) => {
+        return a.localeCompare(b)
+      })
+
+      const expected = [ 'http://example.org/daughter', 'http://example.org/son' ]
+
+      assert.deepEqual(childrenIris, expected)
     })
   })
 
@@ -343,6 +390,45 @@ describe('SimpleRDF', () => {
       blog.post.push(post)
 
       assert(typeof blog.post.push === 'function')
+    })
+
+    it('should support reverse properties', () => {
+      const parentTerm = rdf.namedNode('http://example.org/parent')
+      const father = rdf.namedNode('http://example.org/father')
+      const son = rdf.namedNode('http://example.org/son')
+
+      const context = {
+        children: {
+          '@reverse': parentTerm.value
+        }
+      }
+
+      const simple = new SimpleRDF(context, father)
+
+      simple.children = son
+
+      assert.equal(simple._core.graph.match(son, parentTerm, father).length, 1)
+    })
+
+    it('should support reverse property arrays', () => {
+      const parentTerm = rdf.namedNode('http://example.org/parent')
+      const father = rdf.namedNode('http://example.org/father')
+      const daughter = rdf.namedNode('http://example.org/daughter')
+      const son = rdf.namedNode('http://example.org/son')
+
+      const context = {
+        children: {
+          '@reverse': parentTerm.value,
+          '@container': '@set'
+        }
+      }
+
+      const simple = new SimpleRDF(context, father)
+
+      simple.children = [daughter, son]
+
+      assert.equal(simple._core.graph.match(daughter, parentTerm, father).length, 1)
+      assert.equal(simple._core.graph.match(son, parentTerm, father).length, 1)
     })
   })
 
