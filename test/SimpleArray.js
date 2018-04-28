@@ -133,4 +133,62 @@ describe('SimpleArray', () => {
     assert.deepEqual(array._array, [0, 1, 2])
     assert.deepEqual(addSequence, [])
   })
+
+  describe('.splice', () => {
+    it('should be a method', () => {
+      const addValue = () => {}
+      const getValue = () => {}
+      const removeValue = () => {}
+
+      const array = new SimpleArray(addValue, getValue, removeValue)
+
+      assert.equal(typeof array.splice, 'function')
+    })
+
+    it('should remove elements', () => {
+      const removed = []
+
+      const addValue = () => {}
+      const getValue = () => {}
+      const removeValue = (value) => {
+        removed.push(value)
+      }
+
+      const array = new SimpleArray(addValue, getValue, removeValue, [0, 1, 2, 3, 4, 5])
+
+      array.splice(2, 3)
+
+      assert.deepEqual(removed, [2, 3, 4])
+      assert.deepEqual(array._array, [0, 1, 5])
+    })
+
+    it('should return removed elements', () => {
+      const addValue = () => {}
+      const getValue = () => {}
+      const removeValue = () => {}
+
+      const array = new SimpleArray(addValue, getValue, removeValue, [0, 1, 2, 3, 4, 5])
+
+      const removed = array.splice(2, 3)
+
+      assert.deepEqual(removed, [2, 3, 4])
+    })
+
+    it('should insert elements at the given index', () => {
+      const added = []
+
+      const addValue = (value) => {
+        added.push(value)
+      }
+      const getValue = () => {}
+      const removeValue = () => {}
+
+      const array = new SimpleArray(addValue, getValue, removeValue, [0, 1, 2, 3, 4, 5])
+
+      array.splice(2, 0, 10, 11, 12)
+
+      assert.deepEqual(added, [10, 11, 12])
+      assert.deepEqual(array._array, [ 0, 1, 10, 11, 12, 2, 3, 4, 5 ])
+    })
+  })
 })
