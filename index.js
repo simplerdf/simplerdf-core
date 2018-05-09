@@ -1,6 +1,4 @@
-'use strict'
-
-const rdf = require('rdf-ext')
+const datasetFactory = require('./lib/dataset')
 const SimpleArray = require('./lib/array')
 const SimpleContext = require('./lib/context')
 const SimpleCore = require('./lib/core')
@@ -17,10 +15,10 @@ class SimpleRDF {
 
       this._core.context.descriptions().forEach((description) => {
         // access values with full IRI
-        this._handler.addProperty(description.predicate, description.predicate, description.options)
+        this._handler.addProperty(description)
 
         // access values with short property
-        this._handler.addProperty(description.property, description.predicate, description.options)
+        this._handler.addProperty(description)
       })
     }
 
@@ -46,11 +44,11 @@ class SimpleRDF {
     if (graph) {
       this._core.graph = graph
 
-      this._core.graph.match(this._core.iri).forEach((triple) => {
-        let property = triple.predicate.value
+      this._core.graph.match(this._core.iri).forEach(quad => {
+        const description = SimpleContext.parseJsonProperty(quad.predicate.value, quad.predicate.value)
 
-        if (!this._handler.hasProperty(property)) {
-          this._handler.addProperty(property, triple.predicate)
+        if (!this._handler.hasProperty(description.property)) {
+          this._handler.addProperty(description)
         }
       })
     }
@@ -68,8 +66,8 @@ class SimpleRDF {
 
     this._core.iri = SimpleCore.buildNode(iri)
 
-    this.context(context)
-    this.graph(graph || rdf.dataset())
+    this.context(context || {})
+    this.graph(datasetFactory(graph, this._core))
 
     this._options = options || {}
 

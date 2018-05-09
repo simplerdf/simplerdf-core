@@ -425,7 +425,7 @@ describe('SimpleRDF', () => {
 
       const simple = new SimpleRDF(context, father)
 
-      simple.children = [daughter, son]
+      simple.children = [simple.child(daughter.value), simple.child(son.value)]
 
       assert.equal(simple._core.graph.match(daughter, parentTerm, father).length, 1)
       assert.equal(simple._core.graph.match(son, parentTerm, father).length, 1)
@@ -622,6 +622,105 @@ describe('SimpleRDF', () => {
       blog.post = [post]
 
       assert.equal(blog.toString().trim(), '<http://example.org/blog> <http://schema.org/post> <http://example.org/post-1> .')
+    })
+  })
+
+  describe('sync', () => {
+    describe('objects', () => {
+      const context = {
+        hasPart: {
+          '@id': 'http://schema.org/hasPart'
+        },
+        isPartOf: {
+          '@reverse': 'http://schema.org/hasPart'
+        }
+      }
+
+      it('should sync new quads to other SimpleRDF objects', () => {
+        const simple = new SimpleRDF(context)
+        const simpleA = simple.child('http://example.org/A')
+        const simpleB = simple.child('http://example.org/B')
+        const simpleC = simple.child('http://example.org/C')
+
+        simpleA.hasPart = simpleB
+        simpleC.isPartOf = simpleA
+
+        assert.equal(simpleA.hasPart['@id'], simpleC['@id'])
+      })
+
+      it('should sync removed quads to other SimpleRDF objects', () => {
+        const simple = new SimpleRDF(context)
+        const simpleA = simple.child('http://example.org/A')
+        const simpleB = simple.child('http://example.org/B')
+
+        simpleA.hasPart = simpleB
+        simpleB.isPartOf = null
+
+        assert.equal(typeof simpleA.hasPart, 'undefined')
+      })
+    })
+
+    describe('array', () => {
+      const contextArray = {
+        hasPart: {
+          '@id': 'http://schema.org/hasPart',
+          '@container': '@set'
+        },
+        isPartOf: {
+          '@reverse': 'http://schema.org/hasPart',
+          '@container': '@set'
+        }
+      }
+
+      it('should sync new quads to other SimpleArray objects to reverse property', () => {
+        const simple = new SimpleRDF(contextArray)
+        const simpleA = simple.child('http://example.org/A')
+        const simpleB = simple.child('http://example.org/B')
+        const simpleC = simple.child('http://example.org/C')
+
+        simpleB.isPartOf.push(simpleA)
+        simpleA.hasPart.push(simpleC)
+
+        assert.deepEqual(simpleA.hasPart.map(v => v['@id']), [simpleB['@id'], simpleC['@id']])
+      })
+
+      it('should sync new quads to other SimpleArray objects from reverse property', () => {
+        const simple = new SimpleRDF(contextArray)
+        const simpleA = simple.child('http://example.org/A')
+        const simpleB = simple.child('http://example.org/B')
+        const simpleC = simple.child('http://example.org/C')
+
+        simpleA.hasPart.push(simpleB)
+        simpleC.isPartOf.push(simpleA)
+
+        assert.deepEqual(simpleA.hasPart.map(v => v['@id']), [simpleB['@id'], simpleC['@id']])
+      })
+
+      it('should sync removed quads to other SimpleArray objects to reverse property', () => {
+        const simple = new SimpleRDF(contextArray)
+        const simpleA = simple.child('http://example.org/A')
+        const simpleB = simple.child('http://example.org/B')
+        const simpleC = simple.child('http://example.org/C')
+
+        simpleB.isPartOf.push(simpleA)
+        simpleC.isPartOf.push(simpleA)
+        simpleA.hasPart.splice(0, 1)
+
+        assert.deepEqual(simpleA.hasPart.map(v => v['@id']), [simpleC['@id']])
+      })
+
+      it('should sync removed quads to other SimpleArray objects from reverse property', () => {
+        const simple = new SimpleRDF(contextArray)
+        const simpleA = simple.child('http://example.org/A')
+        const simpleB = simple.child('http://example.org/B')
+        const simpleC = simple.child('http://example.org/C')
+
+        simpleA.hasPart.push(simpleB)
+        simpleA.hasPart.push(simpleC)
+        simpleB.isPartOf.splice(0, 1)
+
+        assert.deepEqual(simpleA.hasPart.map(v => v['@id']), [simpleC['@id']])
+      })
     })
   })
 
