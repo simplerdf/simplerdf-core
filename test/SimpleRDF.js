@@ -666,11 +666,26 @@ describe('SimpleRDF', () => {
           '@id': 'http://schema.org/hasPart',
           '@container': '@set'
         },
+        hasPartId: {
+          '@id': 'http://schema.org/hasPart',
+          '@type': '@id',
+          '@container': '@set'
+        },
         isPartOf: {
           '@reverse': 'http://schema.org/hasPart',
           '@container': '@set'
         }
       }
+
+      it('should handle blank node Simple items defined as @id', () => {
+        const simple = new SimpleRDF(contextArray)
+        const simpleA = simple.child()
+        const simpleB = simple.child()
+
+        simpleA.hasPartId.push(simpleB)
+
+        assert.deepEqual(simpleA.hasPartId.map(v => v['@id']), [simpleB['@id']])
+      })
 
       it('should sync new quads to other SimpleArray objects to reverse property', () => {
         const simple = new SimpleRDF(contextArray)
