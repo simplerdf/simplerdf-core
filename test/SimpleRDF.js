@@ -736,6 +736,35 @@ describe('SimpleRDF', () => {
 
         assert.deepEqual(simpleA.hasPart.map(v => v['@id']), [simpleC['@id']])
       })
+
+      it('should sync only related SimpleArrays when adding values', () => {
+        const simple = new SimpleRDF(contextArray)
+        const simpleA = simple.child('http://example.org/A')
+        const simpleB = simple.child('http://example.org/B')
+
+        simpleA.hasPart.push('1')
+        simpleB.hasPart.push('2')
+        simpleA.hasPart.push('3')
+
+        assert.deepEqual(simpleA.hasPart.length, 2)
+        assert.deepEqual(simpleA.hasPart.at(0), '1')
+        assert.deepEqual(simpleB.hasPart.length, 1)
+        assert.deepEqual(simpleB.hasPart.at(0), '2')
+      })
+
+      it('should sync only related SimpleArrays when removing values', () => {
+        const simple = new SimpleRDF(contextArray)
+        const simpleA = simple.child('http://example.org/A')
+        const simpleB = simple.child('http://example.org/B')
+
+        simpleA.hasPart.push('1')
+        simpleB.hasPart.push('1')
+        simpleA.hasPart.splice(0, 1)
+
+        assert.deepEqual(simpleA.hasPart.length, 0)
+        assert.deepEqual(simpleB.hasPart.length, 1)
+        assert.deepEqual(simpleB.hasPart.at(0), '1')
+      })
     })
   })
 
