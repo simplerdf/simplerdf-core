@@ -2,11 +2,11 @@
 
 const assert = require('assert')
 const rdf = require('rdf-ext')
-const Context = require('../lib/context')
+const Context = require('../lib/Context')
 
 describe('Context', () => {
   it('should be a constructor', () => {
-    assert.equal(typeof Context, 'function')
+    assert.strictEqual(typeof Context, 'function')
   })
 
   describe('description', () => {
@@ -15,13 +15,13 @@ describe('Context', () => {
     it('should be a method', () => {
       const context = new Context({})
 
-      assert.equal(typeof context.description, 'function')
+      assert.strictEqual(typeof context.description, 'function')
     })
 
     it('should return null if a unknown property is given', () => {
       const context = new Context({})
 
-      assert.equal(context.description('test'), null)
+      assert.strictEqual(context.description('test'), null)
     })
 
     it('should return an object if a known property is given', () => {
@@ -31,7 +31,7 @@ describe('Context', () => {
 
       const description = context.description('property')
 
-      assert.equal(description && typeof description, 'object')
+      assert.strictEqual(description && typeof description, 'object')
     })
 
     it('should return a description with a property string from the key', () => {
@@ -41,7 +41,7 @@ describe('Context', () => {
 
       const description = context.description('property')
 
-      assert.equal(description.property, 'property')
+      assert.strictEqual(description.property, 'property')
     })
 
     it('should return a description with a predicate Named Node from a string definition', () => {
@@ -52,8 +52,8 @@ describe('Context', () => {
       const description = context.description('property')
 
       assert(description.predicate)
-      assert.equal(description.predicate.termType, 'NamedNode')
-      assert.equal(description.predicate.value, examplePropertyIri)
+      assert.strictEqual(description.predicate.termType, 'NamedNode')
+      assert.strictEqual(description.predicate.value, examplePropertyIri)
     })
 
     it('should return a description with a predicate Named Node from a object definition', () => {
@@ -66,8 +66,8 @@ describe('Context', () => {
       const description = context.description('property')
 
       assert(description.predicate)
-      assert.equal(description.predicate.termType, 'NamedNode')
-      assert.equal(description.predicate.value, examplePropertyIri)
+      assert.strictEqual(description.predicate.termType, 'NamedNode')
+      assert.strictEqual(description.predicate.value, examplePropertyIri)
     })
 
     it('should return a description with a options object', () => {
@@ -77,7 +77,7 @@ describe('Context', () => {
 
       const description = context.description('property')
 
-      assert.equal(description.options && typeof description.options, 'object')
+      assert.strictEqual(description.options && typeof description.options, 'object')
     })
 
     it('should return a description with options.array true for @container: @set', () => {
@@ -126,7 +126,7 @@ describe('Context', () => {
     it('should be a method', () => {
       const context = new Context({})
 
-      assert.equal(typeof context.descriptions, 'function')
+      assert.strictEqual(typeof context.descriptions, 'function')
     })
 
     it('should return an array', () => {
@@ -166,7 +166,7 @@ describe('Context', () => {
         }
       }]
 
-      assert.deepEqual(descriptions, expected)
+      assert.deepStrictEqual(descriptions, expected)
     })
   })
 
@@ -174,14 +174,14 @@ describe('Context', () => {
     it('should be a method', () => {
       const context = new Context({})
 
-      assert.equal(typeof context.expand, 'function')
+      assert.strictEqual(typeof context.expand, 'function')
     })
 
     it('should not touch values which contain a colon', () => {
       const context = new Context({})
       const value = '_:b0'
 
-      assert.equal(context.expand(value), value)
+      assert.strictEqual(context.expand(value), value)
     })
 
     it('should expand a value which is defined in the context', () => {
@@ -189,7 +189,7 @@ describe('Context', () => {
         property: 'http://example.org/p'
       })
 
-      assert.equal(context.expand('property'), 'http://example.org/p')
+      assert.strictEqual(context.expand('property'), 'http://example.org/p')
     })
 
     it('should not touch values not define in the context', () => {
@@ -197,7 +197,7 @@ describe('Context', () => {
         property0: 'http://example.org/p'
       })
 
-      assert.equal(context.expand('property1'), 'property1')
+      assert.strictEqual(context.expand('property1'), 'property1')
     })
   })
 
@@ -208,7 +208,7 @@ describe('Context', () => {
     it('should be a method', () => {
       const context = new Context({})
 
-      assert.equal(typeof context.properties, 'function')
+      assert.strictEqual(typeof context.properties, 'function')
     })
 
     it('should return an array', () => {
@@ -234,13 +234,13 @@ describe('Context', () => {
 
       const expected = ['propertyA', 'propertyB']
 
-      assert.deepEqual(properties, expected)
+      assert.deepStrictEqual(properties, expected)
     })
   })
 
   describe('.create', () => {
     it('should be a static method', () => {
-      assert.equal(typeof Context.create, 'function')
+      assert.strictEqual(typeof Context.create, 'function')
     })
 
     it('should create a new context if a JSON object is given', () => {
@@ -250,8 +250,8 @@ describe('Context', () => {
 
       const context = Context.create(json)
 
-      assert.equal(typeof context, 'object')
-      assert.equal(typeof context.descriptions, 'function')
+      assert.strictEqual(typeof context, 'object')
+      assert.strictEqual(typeof context.descriptions, 'function')
     })
 
     it('should return the input if it\'s already a context object', () => {
@@ -263,7 +263,7 @@ describe('Context', () => {
 
       const context = Context.create(input)
 
-      assert.equal(context, input)
+      assert.strictEqual(context, input)
     })
   })
 })
